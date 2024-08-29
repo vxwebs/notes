@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Notebook</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #notebook {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .page {
+            background-color: #fafafa;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            min-height: 300px;
+            overflow: auto;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .nav-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .page-number {
+            font-size: 1em;
+            color: #555;
+        }
+
+        .add-page-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 24px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: 100%;
+        }
+
+        .add-page-btn:hover {
+            background-color: #218838;
+        }
+
+        .save-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 24px;
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: 100%;
+        }
+
+        .save-btn:hover {
+            background-color: #e0a800;
+        }
+
+        textarea {
+            width: 100%;
+            border: none;
+            padding: 10px;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.5;
+            background-color: transparent;
+            outline: none;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="notebook">
+        <h1>School Notebook</h1>
+        <div class="page">
+            <textarea placeholder="Write your notes here..."></textarea>
+        </div>
+        <div class="navigation">
+            <button class="nav-btn" id="prevPageBtn">← Previous</button>
+            <span class="page-number">Page 1</span>
+            <button class="nav-btn" id="nextPageBtn">Next →</button>
+        </div>
+        <button class="add-page-btn">Add New Page</button>
+        <button class="save-btn">Save Notebook</button>
+    </div>
+
+    <script>
+        let pages = JSON.parse(localStorage.getItem('notebookPages')) || [''];
+        let currentPage = 0;
+
+        function updatePageView() {
+            document.querySelector('.page textarea').value = pages[currentPage];
+            document.querySelector('.page-number').textContent = `Page ${currentPage + 1}`;
+            document.getElementById('prevPageBtn').disabled = currentPage === 0;
+            document.getElementById('nextPageBtn').disabled = currentPage === pages.length - 1;
+        }
+
+        document.querySelector('.add-page-btn').addEventListener('click', function() {
+            pages.push('');
+            currentPage = pages.length - 1;
+            updatePageView();
+        });
+
+        document.getElementById('prevPageBtn').addEventListener('click', function() {
+            if (currentPage > 0) {
+                pages[currentPage] = document.querySelector('.page textarea').value;
+                currentPage--;
+                updatePageView();
+            }
+        });
+
+        document.getElementById('nextPageBtn').addEventListener('click', function() {
+            if (currentPage < pages.length - 1) {
+                pages[currentPage] = document.querySelector('.page textarea').value;
+                currentPage++;
+                updatePageView();
+            }
+        });
+
+        document.querySelector('.save-btn').addEventListener('click', function() {
+            pages[currentPage] = document.querySelector('.page textarea').value;
+            localStorage.setItem('notebookPages', JSON.stringify(pages));
+            alert('Notebook saved!');
+        });
+
+        document.querySelector('.page textarea').addEventListener('input', function() {
+            pages[currentPage] = this.value;
+        });
+
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('notebookPages', JSON.stringify(pages));
+        });
+
+        updatePageView();
+    </script>
+
+</body>
+</html>
